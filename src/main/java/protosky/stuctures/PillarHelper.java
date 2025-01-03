@@ -4,6 +4,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PaneBlock;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -104,7 +105,7 @@ public class PillarHelper {
 
         //Check if where we want to put the bedrock is in the chunk we're in.
         if(Math.abs(((chunk.getPos().x * 16) + 8) - spike.getCenterX()) <= 8 && Math.abs(((chunk.getPos().z * 16) + 8) - spike.getCenterZ()) <= 8) {
-            EndCrystalEntity endCrystalEntity = EntityType.END_CRYSTAL.create(world.toServerWorld());
+            EndCrystalEntity endCrystalEntity = EntityType.END_CRYSTAL.create(world.toServerWorld(), SpawnReason.CHUNK_GENERATION);
 
             //endCrystalEntity.setBeamTarget(config.getPos());
             //endCrystalEntity.setInvulnerable(config.isCrystalInvulnerable());

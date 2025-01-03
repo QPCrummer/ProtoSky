@@ -66,13 +66,13 @@ public class StructureHelper {
     // are loading in one session. It gets called by TAGS_LOADED event in fixWorldLoads.java.
     private static synchronized void fixRaceCondition(WorldAccess world) {
         if (!ran) {
-            Registry<Structure> structureRegistry = world.getRegistryManager().get(RegistryKeys.STRUCTURE);
+            Registry<Structure> structureRegistry = world.getRegistryManager().getOptional(RegistryKeys.STRUCTURE).get();
 
             //All of these are mostly copied verbatim from their Generator class (net.minecraft.structure.<structure name>Generator)
             // with minor changes to use Accessors and Invokers. Some are also refactored for readability.
             structures.clear();
             structures.add(new MutablePair<>(
-                    structureRegistry.get(Identifier.tryParse("stronghold")),
+                    structureRegistry.getEntry(Identifier.tryParse("stronghold")).get().value(),
                     (structurePiece, worldAccess, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, blockPos2, chunk) -> {
                         if (structurePiece instanceof StrongholdGenerator.PortalRoom) {
 
@@ -121,7 +121,7 @@ public class StructureHelper {
             );
             //Structure Move handlers
             structures.add(new MutablePair<>(
-                    structureRegistry.get(Identifier.tryParse("swamp_hut")),
+                    structureRegistry.getEntry(Identifier.tryParse("swamp_hut")).get().value(),
                     (structurePiece, worldAccess, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, blockPos2, chunk) -> {
                         if(structurePiece instanceof ShiftableStructurePiece) {
                             SwampHutGenerator This = ((SwampHutGenerator)(Object)structurePiece);
@@ -132,7 +132,7 @@ public class StructureHelper {
                     })
             );
             structures.add(new MutablePair<>(
-                    structureRegistry.get(Identifier.tryParse("jungle_pyramid")),
+                    structureRegistry.getEntry(Identifier.tryParse("jungle_pyramid")).get().value(),
                     (structurePiece, worldAccess, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, blockPos2, chunk) -> {
                         if(structurePiece instanceof ShiftableStructurePiece) {
                             JungleTempleGenerator This = ((JungleTempleGenerator)(Object)structurePiece);
@@ -143,7 +143,7 @@ public class StructureHelper {
                     })
             );
             structures.add(new MutablePair<>(
-                    structureRegistry.get(Identifier.tryParse("desert_pyramid")),
+                    structureRegistry.getEntry(Identifier.tryParse("desert_pyramid")).get().value(),
                     (structurePiece, worldAccess, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, blockPos2, chunk) -> {
                         if(structurePiece instanceof ShiftableStructurePiece) {
                             DesertTempleGenerator This = ((DesertTempleGenerator)(Object)structurePiece);
@@ -154,7 +154,7 @@ public class StructureHelper {
                     })
             );
             structures.add(new MutablePair<>(
-                    structureRegistry.get(Identifier.tryParse("igloo")),
+                    structureRegistry.getEntry(Identifier.tryParse("igloo")).get().value(),
                     (structurePiece, worldAccess, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot, chunk) -> {
                         SimpleStructurePieceInvoker simplePieceInvoker = ((SimpleStructurePieceInvoker) structurePiece);
                         IglooGeneratorPieceInvoker iglooGeneratorPieceInvoker = ((IglooGeneratorPieceInvoker) structurePiece);
@@ -164,7 +164,7 @@ public class StructureHelper {
                         final Identifier TOP_TEMPLATE = Identifier.ofVanilla("igloo/top");
                         final Identifier MIDDLE_TEMPLATE = Identifier.ofVanilla("igloo/middle");
                         final Identifier BOTTOM_TEMPLATE = Identifier.ofVanilla("igloo/bottom");
-                        final Map<Identifier, BlockPos> OFFSETS_FROM_TOP = ImmutableMap.of(
+                        final Map<Identifier, BlockPos> OFFSETS_FROM_TOP = Map.of(
                                 TOP_TEMPLATE, BlockPos.ORIGIN, MIDDLE_TEMPLATE, new BlockPos(2, -3, 4), BOTTOM_TEMPLATE, new BlockPos(0, -3, -2)
                         );
 
@@ -193,7 +193,7 @@ public class StructureHelper {
                     })
             );
             structures.add(new MutablePair<>(
-                    structureRegistry.get(Identifier.tryParse("shipwreck")),
+                    structureRegistry.getEntry(Identifier.tryParse("shipwreck")).get().value(),
                     //This is looks different than the original, but all that happened to it is it was restructured and named.
                     (structurePiece, worldAccess, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot, chunk) -> {
                         SimpleStructurePieceInvoker simplePieceInvoker = ((SimpleStructurePieceInvoker) structurePiece);
@@ -209,7 +209,7 @@ public class StructureHelper {
                         //Beached Shipwrecks
                         if(shipwreckGeneratorPieceInvoker.getGrounded()) {
                             //This moves it down to the minimum height of the world heightmap.
-                            int minimumHeight = worldAccess.getTopY();
+                            int minimumHeight = worldAccess.getTopYInclusive();
                             //Run through the 2D locations of the structure and get the average of their heightmaps
                             BlockPos otherBottomCorner = simplePieceInvoker.getPos().add(size.getX() - 1, 0, size.getZ() - 1);
                             //Run through the 2D locations of the structure and get the average of their heightmaps
@@ -241,11 +241,11 @@ public class StructureHelper {
                     })
             );
             structures.add(new MutablePair<>(
-                    structureRegistry.get(Identifier.tryParse("shipwreck_beached")),
+                    structureRegistry.getEntry(Identifier.tryParse("shipwreck_beached")).get().value(),
                     structures.get(structures.size() - 1).getRight())
             );
             structures.add(new MutablePair<>(
-                    structureRegistry.get(Identifier.tryParse("ocean_ruin_cold")),
+                    structureRegistry.getEntry(Identifier.tryParse("ocean_ruin_cold")).get().value(),
                     //This is looks different than the original, but all that happened to it is it was restructured and named.
                     (structurePiece, worldAccess, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot, chunk) -> {
                         SimpleStructurePieceInvoker simplePieceInvoker = ((SimpleStructurePieceInvoker) structurePiece);
@@ -299,14 +299,14 @@ public class StructureHelper {
                     })
             );
             structures.add(new MutablePair<>(
-                    structureRegistry.get(Identifier.tryParse("ocean_ruin_warm")),
+                    structureRegistry.getEntry(Identifier.tryParse("ocean_ruin_warm")).get().value(),
                     structures.get(structures.size() - 1).getRight())
             );
 
             //These are ran before all the blocks are deleted for the structures that need that.
             beforeDeleteStructures.clear();
             beforeDeleteStructures.add(new MutablePair<>(
-                    structureRegistry.get(Identifier.tryParse("buried_treasure")),
+                    structureRegistry.getEntry(Identifier.tryParse("buried_treasure")).get().value(),
                     (structurePiece, worldAccess, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot, chunk) -> {
                         StructurePieceInvoker pieceInvoker = (StructurePieceInvoker) structurePiece;
 
@@ -332,7 +332,7 @@ public class StructureHelper {
                     })
             );
             beforeDeleteStructures.add(new MutablePair<>(
-                    structureRegistry.get(Identifier.tryParse("end_city")),
+                    structureRegistry.getEntry(Identifier.tryParse("end_city")).get().value(),
                     (structurePiece, worldAccess, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, blockPos2, chunk) -> {
                         LOGGER.info("Ran end city");
                         return true;
@@ -397,7 +397,7 @@ public class StructureHelper {
                 if(partBoxes.size() > 0 && partBoxes.get(0) != null) {
                     //Print out the movement
                     StringBuilder stringBuilder = new StringBuilder();
-                    Registry<Structure> structureRegistry = world.getRegistryManager().get(RegistryKeys.STRUCTURE);
+                    Registry<Structure> structureRegistry = world.getRegistryManager().getOrThrow(RegistryKeys.STRUCTURE);
 
                     stringBuilder.append(structureRegistry.getId(structureStart.getStructure()).toString());
                     stringBuilder.append(" at ");
@@ -457,7 +457,7 @@ public class StructureHelper {
             BlockPos minChunkPos = chunkSectionPos.getMinPos();
 
             //Get the structure registry
-            Registry<Structure> registry = world.getRegistryManager().get(RegistryKeys.STRUCTURE);
+            Registry<Structure> registry = world.getRegistryManager().getOrThrow(RegistryKeys.STRUCTURE);
             Map<Integer, List<Structure>> map = registry.stream()
                     .collect(Collectors.groupingBy(structureType -> structureType.getFeatureGenerationStep().ordinal()));
 
