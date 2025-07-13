@@ -7,8 +7,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(StructurePiece.class)
-public interface StructurePieceAccessor
-{
+public interface StructurePieceAccessor {
     @Accessor("mirror")
     BlockMirror getMirror();
     

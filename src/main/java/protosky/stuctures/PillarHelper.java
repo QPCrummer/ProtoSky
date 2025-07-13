@@ -15,8 +15,6 @@ import net.minecraft.world.gen.feature.EndSpikeFeature;
 
 import java.util.Random;
 
-import static protosky.ProtoSkySettings.LOGGER;
-
 public class PillarHelper {
 
     //Copied from stack overflow
@@ -26,19 +24,22 @@ public class PillarHelper {
         int rectXBlocks = (rect.getPos().x * 16) + 8;
         int rectYBlocks = (rect.getPos().z * 16) + 8;
 
-        int circleDistance_x = Math.abs(circle.getCenterX() - rectXBlocks);
-        int circleDistance_y = Math.abs(circle.getCenterZ() - rectYBlocks);
+        int circleDistanceX = Math.abs(circle.getCenterX() - rectXBlocks);
+        int circleDistanceY = Math.abs(circle.getCenterZ() - rectYBlocks);
 
-        if (circleDistance_x > (16/2 + circle.getRadius())) { return false; }
-        if (circleDistance_y > (16/2 + circle.getRadius())) { return false; }
+        int radiusWithMargin = 8 + circle.getRadius();
 
-        if (circleDistance_x <= (16/2)) { return true; }
-        if (circleDistance_y <= (16/2)) { return true; }
+        if (circleDistanceX > radiusWithMargin) { return false; }
+        if (circleDistanceY > radiusWithMargin) { return false; }
 
-        int cornerDistance_sq = (circleDistance_x - 16/2)^2 +
-                (circleDistance_y - 16/2)^2;
+        if (circleDistanceX <= 8) { return true; }
+        if (circleDistanceY <= 8) { return true; }
 
-        return (cornerDistance_sq <= (circle.getRadius()^2));
+        //int cornerDistanceSq = (circleDistanceX - 8)^2 + (circleDistanceY - 8)^2;
+        int cornerDistanceSq = (circleDistanceX - 8) * (circleDistanceX - 8) +
+                (circleDistanceY - 8) * (circleDistanceY - 8);
+
+        return (cornerDistanceSq <= (circle.getRadius()^2));
     }
 
     public static void generate(StructureWorldAccess world, Chunk chunk) {
@@ -53,12 +54,6 @@ public class PillarHelper {
         }
     }
 
-    private static int i = 1;
-    private static synchronized void incI() {
-        i++;
-        LOGGER.info(String.valueOf(i));
-    }
-
     public static void generateSpike(ServerWorldAccess world, EndSpikeFeature.Spike spike, Chunk chunk) {
         int i = spike.getRadius();
         for (BlockPos blockPos : BlockPos.iterate(
@@ -67,16 +62,12 @@ public class PillarHelper {
         )) {
             if (blockPos.getSquaredDistance(spike.getCenterX(), blockPos.getY(), spike.getCenterZ()) <= (double) (i * i + 1) && blockPos.getY() < spike.getHeight()) {
                 StructureHelper.setBlockInChunk(chunk, blockPos, Blocks.OBSIDIAN.getDefaultState());
-                //.info("trying to generate");
             } else if (blockPos.getY() > 65) {
                 StructureHelper.setBlockInChunk(chunk, blockPos, Blocks.AIR.getDefaultState());
             }
 
         }
         if (spike.isGuarded()) {
-            int j = -2;
-            int k = 2;
-            int l = 3;
             BlockPos.Mutable mutable = new BlockPos.Mutable();
 
             for (int m = -2; m <= 2; ++m) {
@@ -104,9 +95,6 @@ public class PillarHelper {
         //Check if where we want to put the bedrock is in the chunk we're in.
         if(Math.abs(((chunk.getPos().x * 16) + 8) - spike.getCenterX()) <= 8 && Math.abs(((chunk.getPos().z * 16) + 8) - spike.getCenterZ()) <= 8) {
             EndCrystalEntity endCrystalEntity = EntityType.END_CRYSTAL.create(world.toServerWorld(), SpawnReason.CHUNK_GENERATION);
-
-            //endCrystalEntity.setBeamTarget(config.getPos());
-            //endCrystalEntity.setInvulnerable(config.isCrystalInvulnerable());
             endCrystalEntity.refreshPositionAndAngles(
                     (double)spike.getCenterX() + 0.5, spike.getHeight() + 1, (double)spike.getCenterZ() + 0.5, new Random().nextFloat() * 360.0F, 0.0F
             );

@@ -3,7 +3,9 @@ package protosky;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
@@ -24,8 +26,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-public class WorldGenUtils
-{
+public class WorldGenUtils {
+    public static final TagKey<Block> OCEAN_FLOOR = TagKey.of(RegistryKeys.BLOCK, Identifier.of("protosky", "ocean_floor"));
+
     public static void deleteBlocks(Chunk chunk, ServerWorld world) {
         //This loops through all sections (16x16x16) sections of a chunk and copies over the biome information, but not the blocks.
         ChunkSection[] sections = chunk.getSectionArray();
@@ -40,14 +43,6 @@ public class WorldGenUtils
         for (BlockPos bePos : chunk.getBlockEntityPositions()) {
             chunk.removeBlockEntity(bePos);
         }
-
-        //This should clear all the light sources
-        /*ProtoChunk protoChunk = (ProtoChunk) chunk;
-        ProtoChunkAccessor protoChunkAccessor = (ProtoChunkAccessor) protoChunk;
-        LightingProvider lightingProvider = protoChunkAccessor.getLightingProvider();
-        LightingProvider lightingProvider = world.getLightingProvider();
-        lightingProvider.doLightUpdates();
-        chunk.getLightSources().clear();*/
     }
 
     public static void genHeightMaps(Chunk chunk) {
@@ -59,7 +54,6 @@ public class WorldGenUtils
             heightmapEntry.getValue().setTo(chunk, heightmapEntry.getKey(), emptyHeightmap);
         }
     }
-
 
     public static void clearEntities(ProtoChunk chunk, ServerWorld world) {
         // erase entities

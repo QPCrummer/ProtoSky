@@ -1,13 +1,11 @@
 package protosky.stuctures;
 
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.EndPortalFrameBlock;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.*;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.structure.processor.BlockRotStructureProcessor;
@@ -24,9 +22,7 @@ import net.minecraft.util.math.random.Xoroshiro128PlusPlusRandom;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -34,6 +30,7 @@ import net.minecraft.world.gen.feature.util.PlacedFeatureIndexer;
 import net.minecraft.world.gen.structure.Structure;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import protosky.WorldGenUtils;
 import protosky.mixins.StructureHelperInvokers.*;
 import protosky.mixins.StructurePieceAccessor;
 
@@ -176,19 +173,14 @@ public class StructureHelper {
                         simplePieceInvoker.getPlacementData().setBoundingBox(chunkBox);
                         pieceInvoker.setBoundingBox(simplePieceInvoker.getTemplate().calculateBoundingBox(simplePieceInvoker.getPlacementData(), simplePieceInvoker.getPos()));
 
-                        if (identifier.equals(TOP_TEMPLATE)) {
-                            BlockPos blockPos4 = simplePieceInvoker.getPos().add(StructureTemplate.transform(structurePlacementData, new BlockPos(3, 0, 5)));
-                        }
-
                         simplePieceInvoker.setPos(posCache);
 
-                        //return true;
                         return false;
                     })
             );
             structures.add(new MutablePair<>(
                     structureRegistry.getEntry(Identifier.tryParse("shipwreck")).get().value(),
-                    //This is looks different than the original, but all that happened to it is it was restructured and named.
+                    //This is looks different from the original, but all that happened to it is it was restructured and named.
                     (structurePiece, worldAccess, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot, chunk) -> {
                         SimpleStructurePieceInvoker simplePieceInvoker = ((SimpleStructurePieceInvoker) structurePiece);
                         ShipwreckGeneratorPieceInvoker shipwreckGeneratorPieceInvoker  = ((ShipwreckGeneratorPieceInvoker) structurePiece);
@@ -198,7 +190,7 @@ public class StructureHelper {
 
                         Vec3i size = simplePieceInvoker.getTemplate().getSize();
                         int area2D = size.getX() * size.getZ();
-                        int YtoMoveTo = 0;
+                        int YtoMoveTo;
 
                         //Beached Shipwrecks
                         if(shipwreckGeneratorPieceInvoker.getGrounded()) {
@@ -227,7 +219,6 @@ public class StructureHelper {
                         }
 
                         simplePieceInvoker.setPos(new BlockPos(simplePieceInvoker.getPos().getX(), YtoMoveTo, simplePieceInvoker.getPos().getZ()));
-                        //super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot);
                         simplePieceInvoker.getPlacementData().setBoundingBox(chunkBox);
                         pieceInvoker.setBoundingBox(simplePieceInvoker.getTemplate().calculateBoundingBox(simplePieceInvoker.getPlacementData(), simplePieceInvoker.getPos()));
 
@@ -284,8 +275,6 @@ public class StructureHelper {
                             yToMoveTo = lowestSpot + 1;
                         }
 
-                        //int yToMoveTo = oceanRuinYCalculator(simplePieceInvoker.getPos(), worldAccess, otherCorner);
-
                         simplePieceInvoker.setPos(new BlockPos(simplePieceInvoker.getPos().getX(), yToMoveTo, simplePieceInvoker.getPos().getZ()));
                         simplePieceInvoker.getPlacementData().setBoundingBox(chunkBox);
                         pieceInvoker.setBoundingBox(simplePieceInvoker.getTemplate().calculateBoundingBox(simplePieceInvoker.getPlacementData(), simplePieceInvoker.getPos()));
@@ -309,11 +298,7 @@ public class StructureHelper {
 
                         while(mutable.getY() > worldAccess.getBottomY()) {
                             BlockState blockState2 = worldAccess.getBlockState(mutable.down());
-                            if (blockState2 == Blocks.SANDSTONE.getDefaultState()
-                                    || blockState2 == Blocks.STONE.getDefaultState()
-                                    || blockState2 == Blocks.ANDESITE.getDefaultState()
-                                    || blockState2 == Blocks.GRANITE.getDefaultState()
-                                    || blockState2 == Blocks.DIORITE.getDefaultState()) {
+                            if (blockState2.isIn(WorldGenUtils.OCEAN_FLOOR)) {
                                 break;
                             }
 
@@ -338,7 +323,7 @@ public class StructureHelper {
     // during generation. This basically does what the findStructureMoves mod does except for all structures not just the
     // one it's looking for at the moment. The detectStructureMoved mod doesn't work here because it hooks into StructureStart.place()
     // to detect the movement of a structure but the ProtoSky mod uses its own called handleStructureStarts(). It also doesn't
-    // work because not all structures are generated by this mod and it doesn't know which ones are, so even if it hooked
+    // work because not all structures are generated by this mod, and it doesn't know which ones are, so even if it hooked
     // into the correct function it would wait forever for to get the generation of a structure that would never generate.
     private static BlockBox cloneBlockBox(BlockBox blockBox) {
         return new BlockBox(blockBox.getMinX(), blockBox.getMinY(), blockBox.getMinZ(), blockBox.getMaxX(), blockBox.getMaxY(), blockBox.getMaxZ());
@@ -362,7 +347,7 @@ public class StructureHelper {
                                              ManyArgumentFunction<Boolean, StructurePiece, StructureWorldAccess, StructureAccessor, ChunkGenerator, Random, BlockBox, ChunkPos, BlockPos, Chunk> handler, Chunk chunk) {
         List<StructurePiece> structurePieces = structureStart.getChildren();
         if (!structurePieces.isEmpty()) {
-            BlockBox firstPieceBoundBox = structurePieces.get(0).getBoundingBox();
+            BlockBox firstPieceBoundBox = structurePieces.getFirst().getBoundingBox();
             BlockPos centerBlock = firstPieceBoundBox.getCenter();
             BlockPos bottomCenterBlockBox = new BlockPos(centerBlock.getX(), firstPieceBoundBox.getMinY(), centerBlock.getZ());
 
@@ -417,10 +402,10 @@ public class StructureHelper {
 
             } else {
                 for(StructurePiece structurePiece : structurePieces) {
-                    if (structurePiece.getBoundingBox().intersects(chunkBox)) {
-                        if(handler.apply(structurePiece, world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, bottomCenterBlockBox, chunk)) {
-                            structurePiece.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, bottomCenterBlockBox);
-                        }
+                    if (structurePiece.getBoundingBox().intersects(chunkBox) &&
+                            handler.apply(structurePiece, world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, bottomCenterBlockBox, chunk)
+                    ) {
+                        structurePiece.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, bottomCenterBlockBox);
                     }
                 }
             }
@@ -439,7 +424,7 @@ public class StructureHelper {
         //Check if we should generate features
         if (!SharedConstants.isOutsideGenerationArea(chunkPos)) {
             //Get access to a bunch of private stuff by making a fake this
-            ChunkGeneratorInvoker This = ((ChunkGeneratorInvoker) generator);
+            ChunkGeneratorInvoker chunkGeneratorInvoker = ((ChunkGeneratorInvoker) generator);
 
             //Find where to generate
             ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos, world.getBottomSectionCoord());
@@ -451,7 +436,7 @@ public class StructureHelper {
                     .collect(Collectors.groupingBy(structureType -> structureType.getFeatureGenerationStep().ordinal()));
 
             //Get the structure to place
-            List<PlacedFeatureIndexer.IndexedFeatures> list = This.getIndexedFeaturesListSupplier().get();
+            List<PlacedFeatureIndexer.IndexedFeatures> list = chunkGeneratorInvoker.getIndexedFeaturesListSupplier().get();
             int i = list.size();
 
             //Make a new random
@@ -461,18 +446,6 @@ public class StructureHelper {
 
 
             //Stuff to do with features
-            // TODO See if this Set is important
-            Set<RegistryEntry<Biome>> set = new ObjectArraySet<>();
-            ChunkPos.stream(chunkSectionPos.toChunkPos(), 1).forEach(chunkPosx -> {
-                Chunk chunkx = world.getChunk(chunkPosx.x, chunkPosx.z);
-
-                for(ChunkSection chunkSection : chunkx.getSectionArray()) {
-                    chunkSection.getBiomeContainer().forEachValue(set::add);
-                }
-
-            });
-            set.retainAll(This.getBiomeSource().getBiomes());
-
             if(!ran) {
                 fixRaceCondition(world);
             }
@@ -508,7 +481,6 @@ public class StructureHelper {
                                                     }
                                                 }
                                             }
-                                            //start.place(world, structureAccessor, generator, chunkRandom, This.getBlockBoxForChunkInvoker(chunk), chunkPos);
                                         });
                             } catch (Exception e) {
                                 CrashReport crashReport = CrashReport.create(e, "Feature placement");
@@ -519,45 +491,6 @@ public class StructureHelper {
                             ++m;
                         }
                     }
-
-                    //This part is for generating features that aren't needed. I keep it here for reference.
-                    /*
-                    if (k < i) {
-                        IntSet intSet = new IntArraySet();
-
-                        for(RegistryEntry<Biome> registryEntry : set) {
-                            List<RegistryEntryList<PlacedFeature>> list3 = This.getGenerationSettingsGetter().apply(registryEntry)
-                                    .getFeatures();
-                            if (k < list3.size()) {
-                                RegistryEntryList<PlacedFeature> registryEntryList = list3.get(k);
-                                PlacedFeatureIndexer.IndexedFeatures indexedFeatures = list.get(k);
-                                registryEntryList.stream()
-                                        .map(RegistryEntry::value)
-                                        .forEach(placedFeaturex -> intSet.add(indexedFeatures.indexMapping().applyAsInt(placedFeaturex)));
-                            }
-                        }
-
-                        int n = intSet.size();
-                        int[] is = intSet.toIntArray();
-                        Arrays.sort(is);
-                        PlacedFeatureIndexer.IndexedFeatures indexedFeatures2 = list.get(k);
-
-                        for(int o = 0; o < n; ++o) {
-                            int p = is[o];
-                            PlacedFeature placedFeature = indexedFeatures2.features().get(p);
-                            Supplier<String> supplier2 = () -> (String)registry2.getKey(placedFeature).map(Object::toString).orElseGet(placedFeature::toString);
-                            chunkRandom.setDecoratorSeed(l, p, k);
-
-                            try {
-                                world.setCurrentlyGeneratingStructureName(supplier2);
-                                placedFeature.generate(world, generator, chunkRandom, minChunkPos);
-                            } catch (Exception var30) {
-                                CrashReport crashReport2 = CrashReport.create(var30, "Feature placement");
-                                crashReport2.addElement("Feature").add("Description", supplier2::get);
-                                throw new CrashException(crashReport2);
-                            }
-                        }
-                    }//*/
                 }
 
                 world.setCurrentlyGeneratingStructureName(null);

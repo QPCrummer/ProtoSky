@@ -31,9 +31,6 @@ public abstract class ChunkGeneratingMixin {
         ChunkGenerator generator = context.generator();
         Heightmap.populateHeightmaps(chunk, EnumSet.of(Heightmap.Type.MOTION_BLOCKING, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, Heightmap.Type.OCEAN_FLOOR, Heightmap.Type.WORLD_SURFACE));
         ChunkRegion chunkRegion = new ChunkRegion(world, chunks, step, chunk);
-        //This would normally generate structures, the blocks, not the bounding boxes.
-        //context.generator().generateFeatures(chunkRegion, chunk, world.getStructureAccessor().forRegion(chunkRegion));
-        //Blender.tickLeavesAndFluids(chunkRegion, chunk);
 
         //Generate do the structures then delete blocks while in the end to remove the end cities
         if (world.getRegistryKey() == World.END) {
@@ -66,9 +63,6 @@ public abstract class ChunkGeneratingMixin {
         // a different thread still needs to be generated and requires the 'correct' heightmap
         //LOGGER.info("Light " + chunk.getPos());
         WorldGenUtils.genHeightMaps(chunk);
-
-        //Don't cancel because we want the lighting to work.
-        //ci.cancel();
     }
 
     @Inject(method = "generateEntities", at = @At("HEAD"), cancellable = true)

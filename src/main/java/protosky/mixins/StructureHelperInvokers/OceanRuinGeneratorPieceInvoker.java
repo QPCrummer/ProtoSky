@@ -8,7 +8,4 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface OceanRuinGeneratorPieceInvoker {
     @Accessor("integrity")
     float getIntegrity();
-
-    /*@Invoker("method_14829")
-    int method_14829Invoker(BlockPos start, BlockView world, BlockPos end);*/
 }
