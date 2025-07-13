@@ -11,10 +11,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.gen.feature.EndSpikeFeature;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import static protosky.ProtoSkySettings.LOGGER;

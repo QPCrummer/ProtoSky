@@ -4,13 +4,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
-
-import java.util.List;
 
 @Mixin(StructurePiece.class)
 public interface StructurePieceInvoker {

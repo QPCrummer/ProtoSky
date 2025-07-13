@@ -29,7 +29,9 @@ public interface ChunkGeneratorInvoker {
     Function<RegistryEntry<Biome>, GenerationSettings> getGenerationSettingsGetter();
 
     @Invoker("getBlockBoxForChunk")
-    BlockBox getBlockBoxForChunkInvoker(Chunk chunk);
+    static BlockBox getBlockBoxForChunkInvoker(Chunk chunk) {
+        throw new AssertionError();
+    }
 
 
 }

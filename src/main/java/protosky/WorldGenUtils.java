@@ -22,8 +22,7 @@ import net.minecraft.world.chunk.*;
 
 import java.util.Map;
 import java.util.Optional;
-
-import static protosky.ProtoSkySettings.LOGGER;
+import java.util.Set;
 
 public class WorldGenUtils
 {
@@ -64,12 +63,13 @@ public class WorldGenUtils
 
     public static void clearEntities(ProtoChunk chunk, ServerWorld world) {
         // erase entities
-        if (!(world.getRegistryKey() == World.END)) {
+        if (world.getRegistryKey() != World.END) {
             chunk.getEntities().clear();
         } else {
             chunk.getEntities().removeIf(tag -> {
-                String id = tag.getString("id");
-                return !id.equals("minecraft:end_crystal") && !id.equals("minecraft:shulker") && !id.equals("minecraft:item_frame");
+                String id = tag.getString("id").get();
+                Set<String> set = Set.of("minecraft:end_crystal", "minecraft:shulker", "minecraft:item_frame");
+                return !set.contains(id);
             });
         }
     }

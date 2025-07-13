@@ -10,5 +10,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(IglooGenerator.Piece.class)
 public interface IglooGeneratorPieceInvoker {
     @Invoker("createPlacementData")
-    StructurePlacementData invokeCreatePlacementData(BlockRotation rotation, Identifier identifier);
+    static StructurePlacementData invokeCreatePlacementData(BlockRotation rotation, Identifier identifier) {
+        throw new AssertionError();
+    }
 }

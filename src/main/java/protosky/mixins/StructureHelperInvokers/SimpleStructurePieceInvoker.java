@@ -1,10 +1,8 @@
 package protosky.mixins.StructureHelperInvokers;
 
-import net.minecraft.block.Block;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
