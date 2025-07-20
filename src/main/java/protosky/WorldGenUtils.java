@@ -29,7 +29,7 @@ import java.util.Set;
 public class WorldGenUtils {
     public static final TagKey<Block> OCEAN_FLOOR = TagKey.of(RegistryKeys.BLOCK, Identifier.of("protosky", "ocean_floor"));
 
-    public static void deleteBlocks(Chunk chunk, ServerWorld world) {
+    public static void deleteBlocks(Chunk chunk) {
         //This loops through all sections (16x16x16) sections of a chunk and copies over the biome information, but not the blocks.
         ChunkSection[] sections = chunk.getSectionArray();
         for (int i = 0; i < sections.length; i++) {

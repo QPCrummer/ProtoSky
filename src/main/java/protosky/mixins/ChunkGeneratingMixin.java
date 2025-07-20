@@ -37,7 +37,7 @@ public abstract class ChunkGeneratingMixin {
             //This generates all the structures
             StructureHelper.handleStructures(chunkRegion, chunk, world.getStructureAccessor().forRegion(chunkRegion), generator, true);
             //Delete all the terrain and end cities. I couldn't figure out how to generate just the shulkers and elytra, so I resorted to just generating the whole thing and deleting the blocks.
-            WorldGenUtils.deleteBlocks(chunk, world);
+            WorldGenUtils.deleteBlocks(chunk);
             //Generate the end pillars. This is its own thing and not in handleStructures() because pillars are features not structures.
             PillarHelper.generate(world, chunk);
 
@@ -46,7 +46,7 @@ public abstract class ChunkGeneratingMixin {
             //We need handle some structures before we delete blocks because they rely on blocks being there.
             StructureHelper.handleStructures(chunkRegion, chunk, world.getStructureAccessor().forRegion(chunkRegion), generator, true);
             //Delete all the terrain and end cities. I couldn't figure out how to generate just the shulkers and elytra, so I resorted to just generating the whole thing and deleting the blocks.
-            WorldGenUtils.deleteBlocks(chunk, world);
+            WorldGenUtils.deleteBlocks(chunk);
             //This generates all the structures
             StructureHelper.handleStructures(chunkRegion, chunk, world.getStructureAccessor().forRegion(chunkRegion), generator, false);
         }

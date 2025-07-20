@@ -5,15 +5,16 @@
   "mixins": [
     "ChunkGeneratingMixin",
     "EnderDragonFightMixin",
+    "LightRodFixMixin",
     "StructurePieceAccessor",
     "StructureHelperInvokers.ChunkGeneratorInvoker",
     "StructureHelperInvokers.IglooGeneratorPieceInvoker",
+    "StructureHelperInvokers.OceanRuinGeneratorPieceInvoker",
     "StructureHelperInvokers.ShiftableStructurePieceInvoker",
     "StructureHelperInvokers.ShipwreckGeneratorPieceInvoker",
     "StructureHelperInvokers.SimpleStructurePieceInvoker",
     "StructureHelperInvokers.StructurePieceInvoker",
-    "StructureHelperInvokers.StructureStartInvoker",
-    "StructureHelperInvokers.OceanRuinGeneratorPieceInvoker"
+    "StructureHelperInvokers.StructureStartInvoker"
   ],
   "injectors": {
     "defaultRequire": 1
