@@ -19,6 +19,7 @@ import net.minecraft.util.math.random.RandomSeed;
 import net.minecraft.util.math.random.Xoroshiro128PlusPlusRandom;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.*;
 
@@ -34,7 +35,7 @@ public class WorldGenUtils {
         ChunkSection[] sections = chunk.getSectionArray();
         for (int i = 0; i < sections.length; i++) {
             ChunkSection chunkSection = sections[i];
-            PalettedContainer<BlockState> blockStateContainer = new PalettedContainer<>(Block.STATE_IDS, Blocks.AIR.getDefaultState(), PalettedContainer.PaletteProvider.BLOCK_STATE);
+            PalettedContainer<BlockState> blockStateContainer = new PalettedContainer<>(Blocks.AIR.getDefaultState(), PaletteProvider.forBlockStates(Block.STATE_IDS));
             ReadableContainer<RegistryEntry<Biome>> biomeContainer = chunkSection.getBiomeContainer();
             sections[i] = new ChunkSection(blockStateContainer, biomeContainer);
         }
@@ -93,6 +94,6 @@ public class WorldGenUtils {
 
         int flags = 0;
         s.place(world, blockPos, blockPos, structurePlacementData, new Xoroshiro128PlusPlusRandom(RandomSeed.getSeed()), flags);
-        world.setSpawnPos(blockPos.add(s.getSize().getX() / 2, s.getSize().getY() + 1, s.getSize().getZ() / 2), 0);
+        world.setSpawnPoint(WorldProperties.SpawnPoint.create(world.getRegistryKey(), blockPos.add(s.getSize().getX() / 2, s.getSize().getY() + 1, s.getSize().getZ() / 2), 0, 0));
     }
 }
